@@ -1,5 +1,7 @@
 #include <iostream>
 #include <stdio.h>
+#include <stdlib.h>
+#include <cstdio>
 #include <cstring>
 #include <sys/stat.h>
 #include <functional>
@@ -18,6 +20,7 @@ void PasswordManager::createDatabase()
     std::cin >> userInput;
     std::string passwordFile = userInput + ".db";
     const char *filePwd = passwordFile.c_str();
+
     sqlite3 *db;
     struct stat sb;
     if (stat(filePwd, &sb) == 0)
@@ -25,25 +28,36 @@ void PasswordManager::createDatabase()
         std::cout << "Database file exists" << std::endl;
         return;
     }
-    else
+
+    std::string sqlTable = "CREATE TABLE IF NOT EXISTS Passwords("
+                           "id          INTEGER     PRIMARY KEY     AUTOINCREMENT, "
+                           "userName    TEXT        NOT NULL, "
+                           "password    TEXT        NOT NULL, "
+                           "description Text);";
+
+    int file_status = sqlite3_open(filePwd, &db);
+    if (file_status)
     {
-        std::string sqlTable = "CREATE TABLE PASSWORDS("
-                               "userName   TEXT    NOT NULL"
-                               "password   TEXT    NOT NULL"
-                               "description    Text";
-        int file_status = sqlite3_open(filePwd, &db);
-        if (file_status)
-        {
-            std::cerr << "Database could not be created" << sqlite3_errmsg(db) << std::endl;
-            return;
-        }
-        char *messageError;
-        // database, SQL-statement, Callback function, 1st argument to callback function, error msg
-        sqlite3_exec(db, sqlTable.c_str(), NULL, 0, &messageError);
-        std::cout << "Database created!" << std::endl;
+        std::cerr << "Database could not be created" << sqlite3_errmsg(db) << std::endl;
+        return;
     }
+    char *messageError;
+    //  database, SQL-statement, Callback function, 1st argument to callback function, error msg
+    int res = sqlite3_exec(db, sqlTable.c_str(), NULL, 0, &messageError);
+    if (res != SQLITE_OK)
+    {
+        std::cout << "Database error:  " << messageError << std::endl;
+        sqlite3_close(db);
+        return;
+    }
+
     PasswordManager::m_databaseName = userInput;
     sqlite3_close(db);
+
+    std::cout << "Enter master-password: " << std::endl;
+    std::cin >> userInput;
+    size_t hashedPwd = PasswordManager::pwdHashing(userInput);
+    PasswordManager::createMasterFile(hashedPwd);
 }
 
 // Hashes passwords
@@ -72,10 +86,38 @@ void PasswordManager::changeMasterPwd()
                   << std::endl;
         return;
     }
+
+    bool master = PasswordManager::controlMasterPwd();
+    if (!master)
+    {
+        std::cout << "The current master-password is wrong..." << std::endl;
+        return;
+    }
+
+    std::string userInput = "";
+    std::cout << "Enter new master-password: " << std::endl;
+    std::cin >> userInput;
+    size_t hashedPwd = PasswordManager::pwdHashing(userInput);
+
+    std::ofstream masterFileOutput(PasswordManager::m_databaseName + ".txt", std::ofstream::trunc);
+    masterFileOutput << hashedPwd;
+    masterFileOutput.close();
+}
+
+// Used to access the private variable
+void PasswordManager::setDatabaseName(std::string databaseName)
+{
+    PasswordManager::m_databaseName = databaseName;
+}
+
+// Controls if the user knows the master-password to the current database
+bool PasswordManager::controlMasterPwd()
+{
     std::string userInput = "";
     std::cout << "What is the current master-password?" << std::endl;
     std::cin >> userInput;
     size_t oldPasswordHashUser = PasswordManager::pwdHashing(userInput);
+
     std::string oldPasswordHashDatabase = "";
     std::ifstream masterFileInput(PasswordManager::m_databaseName + ".txt");
     std::getline(masterFileInput, oldPasswordHashDatabase);
@@ -86,15 +128,78 @@ void PasswordManager::changeMasterPwd()
 
     if (oldPasswordHashUser != oldPwdDatabase)
     {
-        std::cout << "The current master-password is wrong..." << std::endl;
+        return false;
+    }
+    return true;
+}
+
+void PasswordManager::addNewPassword()
+{
+    std::string newPwd = "";
+    std::string newUsername = "";
+    std::string newDesc = "";
+    std::cout << "Enter the new password: " << std::endl;
+    std::cin >> newPwd;
+    std::cout << "Enter the new username: " << std::endl;
+    std::cin >> newUsername;
+    std::cout << "Enter a description: " << std::endl;
+    std::cin >> newDesc;
+
+    const char *filePwd = (PasswordManager::m_databaseName + ".db").c_str();
+    sqlite3 *db;
+
+    sqlite3_open(filePwd, &db);
+    char *messageError;
+    std::stringstream sqlCommand;
+    sqlCommand << "INSERT INTO Passwords (username, password, description) VALUES('"
+               << newUsername
+               << "', '" << newPwd
+               << "', '" << newDesc
+               << "');";
+
+    int res = sqlite3_exec(db, sqlCommand.str().c_str(), NULL, 0, &messageError);
+    if (res != SQLITE_OK)
+    {
+        std::cout << "Insertion error:  " << messageError << std::endl;
+        sqlite3_close(db);
         return;
     }
 
-    std::cout << "Enter new master-password: " << std::endl;
-    std::cin >> userInput;
-    size_t hashedPwd = PasswordManager::pwdHashing(userInput);
+    sqlite3_close(db);
 
-    std::ofstream masterFileOutput(PasswordManager::m_databaseName + ".txt", std::ofstream::trunc);
-    masterFileOutput << hashedPwd;
-    masterFileOutput.close();
+    std::cout << "Credentials added" << std::endl;
+}
+
+// Callback function to display the contents of the database
+int PasswordManager::callback(void *data, int argc, char **argv, char **colName)
+{
+    std::cout << (const char *)data << std::endl;
+    for (int i; i < argc; i++)
+    {
+        std::cout << colName[i] << "\t" << argv[i] << std::endl;
+    }
+    return 0;
+}
+
+// Function to display the contents of the database
+void PasswordManager::displayPwd()
+{
+    bool master = PasswordManager::controlMasterPwd();
+    if (!master)
+    {
+        std::cout << "Wrong master-password!\nYou are not allowed to view the content of the database!" << std::endl;
+        return;
+    }
+
+    const char *filePwd = (PasswordManager::m_databaseName + ".db").c_str();
+    sqlite3 *db;
+    // struct stat sb;
+
+    const char *data = "Contents of database:\n";
+    std::string sqlCommand = "SELECT * FROM Passwords";
+    // int file_status = sqlite3_open(filePwd, &db);
+    sqlite3_open(filePwd, &db);
+    char *messageError;
+    sqlite3_exec(db, sqlCommand.c_str(), PasswordManager::callback, (void *)data, &messageError);
+    sqlite3_close(db);
 }

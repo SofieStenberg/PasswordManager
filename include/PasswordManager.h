@@ -8,12 +8,15 @@ private:
     static std::string m_databaseName;
 
 public:
-    // static std::string m_masterPWD; // NEJ!!!!
-
+    static void setDatabaseName(std::string databaseName);
     static void createDatabase();
     static size_t pwdHashing(std::string pwd);
     static void createMasterFile(size_t hashedPwd);
     static void changeMasterPwd();
+    static bool controlMasterPwd();
+    static void addNewPassword();
+    static void displayPwd();
+    static int callback(void *data, int argc, char **argv, char **colName);
 };
 
 #endif
