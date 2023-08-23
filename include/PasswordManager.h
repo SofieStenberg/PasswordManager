@@ -20,3 +20,25 @@ public:
 };
 
 #endif
+
+// -----------------------------------------------------------------------------------------------//
+
+// This is also a valid and functional code snippet to insert values in the database!
+// sqlite_exec is a shortcut for using sqlite3_prepare_v2(), sqlite3_step() and sqlite3_finalize()
+
+// sqlite3_stmt \*st;
+// sqlite3 *db;
+// const char *filePwd = (PasswordManager::m_databaseName + ".db").c_str();
+// std::string sqlCommand = "INSERT INTO Passwords (username, password, description) VALUES(?, ?, ?);";
+// sqlite3_open(filePwd, &db);
+// int res = sqlite3_prepare_v2(db, sqlCommand.c_str(), -1, &st, NULL);
+// if (res == SQLITE_OK)
+// {
+//     sqlite3_bind_text(st, 1, newUsername.c_str(), newUsername.length(), SQLITE_TRANSIENT);
+//     sqlite3_bind_text(st, 2, newPwd.c_str(), newPwd.length(), SQLITE_TRANSIENT);
+//     sqlite3_bind_text(st, 3, newDesc.c_str(), newDesc.length(), SQLITE_TRANSIENT);
+//     sqlite3_step(st);
+//     sqlite3_finalize(st);
+// }
+
+// -----------------------------------------------------------------------------------------------//
