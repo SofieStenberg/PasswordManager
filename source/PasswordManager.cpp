@@ -193,13 +193,20 @@ void PasswordManager::displayPwd()
 
     const char *filePwd = (PasswordManager::m_databaseName + ".db").c_str();
     sqlite3 *db;
-    // struct stat sb;
+    sqlite3_stmt *st;
+    std::string sqlCommand = "SELECT username, password, description FROM Passwords";
 
-    const char *data = "Contents of database:\n";
-    std::string sqlCommand = "SELECT * FROM Passwords";
-    // int file_status = sqlite3_open(filePwd, &db);
     sqlite3_open(filePwd, &db);
-    char *messageError;
-    sqlite3_exec(db, sqlCommand.c_str(), PasswordManager::callback, (void *)data, &messageError);
+    sqlite3_prepare_v2(db, sqlCommand.c_str(), -1, &st, NULL);
+    std::cout << "Usernames"
+              << "\t"
+              << "Passwords"
+              << "\t"
+              << "Descriptions" << std::endl;
+    // Displays everything except the id
+    while (sqlite3_step(st) != SQLITE_DONE)
+    {
+        std::cout << sqlite3_column_text(st, 0) << "\t" << sqlite3_column_text(st, 1) << "\t" << sqlite3_column_text(st, 2) << std::endl;
+    }
     sqlite3_close(db);
 }
