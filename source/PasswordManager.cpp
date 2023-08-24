@@ -1,3 +1,7 @@
+//
+//                      Created by Sofie Stenberg 2023-08
+//
+
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -142,8 +146,8 @@ void PasswordManager::addNewPassword()
     std::cin >> newPwd;
     std::cout << "Enter the new username: " << std::endl;
     std::cin >> newUsername;
-    std::cout << "Enter a description: " << std::endl;
-    std::cin >> newDesc;
+    std::cout << "Enter a description (Optional): " << std::endl;
+    std::getline(std::cin, newDesc);
 
     const char *filePwd = (PasswordManager::m_databaseName + ".db").c_str();
     sqlite3 *db;
@@ -170,19 +174,8 @@ void PasswordManager::addNewPassword()
     std::cout << "Credentials added" << std::endl;
 }
 
-// Callback function to display the contents of the database
-int PasswordManager::callback(void *data, int argc, char **argv, char **colName)
-{
-    std::cout << (const char *)data << std::endl;
-    for (int i; i < argc; i++)
-    {
-        std::cout << colName[i] << "\t" << argv[i] << std::endl;
-    }
-    return 0;
-}
-
 // Function to display the contents of the database
-void PasswordManager::displayPwd()
+void PasswordManager::displayEntries()
 {
     bool master = PasswordManager::controlMasterPwd();
     if (!master)
@@ -194,19 +187,97 @@ void PasswordManager::displayPwd()
     const char *filePwd = (PasswordManager::m_databaseName + ".db").c_str();
     sqlite3 *db;
     sqlite3_stmt *st;
-    std::string sqlCommand = "SELECT username, password, description FROM Passwords";
+    std::string sqlCommand = "SELECT id, username, description FROM Passwords";
 
     sqlite3_open(filePwd, &db);
     sqlite3_prepare_v2(db, sqlCommand.c_str(), -1, &st, NULL);
-    std::cout << "Usernames"
+    std::cout << "ID"
               << "\t"
-              << "Passwords"
+              << "Usernames"
               << "\t"
               << "Descriptions" << std::endl;
     // Displays everything except the id
     while (sqlite3_step(st) != SQLITE_DONE)
     {
-        std::cout << sqlite3_column_text(st, 0) << "\t" << sqlite3_column_text(st, 1) << "\t" << sqlite3_column_text(st, 2) << std::endl;
+        std::cout << sqlite3_column_int(st, 0) << "\t" << sqlite3_column_text(st, 1) << "\t" << sqlite3_column_text(st, 2) << std::endl;
     }
     sqlite3_close(db);
+}
+
+int PasswordManager::callbackCount(void *countOfRows, int argc, char **argv, char **colName)
+{
+    int *c = (int *)countOfRows;
+    // just because the compiler explains that the variables are unused otherwise...
+    *c = argc;
+    *c = atoi(colName[0]);
+    *c = atoi(argv[0]);
+    return 0;
+}
+
+void PasswordManager::displayPwd()
+{
+    bool master = PasswordManager::controlMasterPwd();
+    if (!master)
+    {
+        std::cout << "Wrong master-password!\nYou are not allowed to view the content of the database!" << std::endl;
+        return;
+    }
+
+    std::string userInput = "";
+    std::cout << "Choose the entry/ID to the password you want to reveal:" << std::endl;
+    std::cin >> userInput;
+
+    const char *filePwd = (PasswordManager::m_databaseName + ".db").c_str();
+    sqlite3 *db;
+    sqlite3_stmt *st;
+    int countOfRows = 0;
+    char *messageError;
+    std::string sqlCommand = "SELECT COUNT(*) FROM Passwords";
+
+    sqlite3_open(filePwd, &db);
+    int res = sqlite3_exec(db, sqlCommand.c_str(), PasswordManager::callbackCount, &countOfRows, &messageError);
+    if (res != SQLITE_OK)
+    {
+        std::cout << "Error in retrieving count: " << messageError << std::endl;
+        return;
+    }
+    if (stoi(userInput) > countOfRows)
+    {
+        std::cout << "Entry is not valid..." << std::endl;
+        return;
+    }
+
+    sqlCommand = "SELECT * FROM passwords WHERE id = " + userInput;
+    sqlite3_prepare_v2(db, sqlCommand.c_str(), -1, &st, NULL);
+    std::cout << "ID"
+              << "\t"
+              << "Usernames"
+              << "\t"
+              << "Password"
+              << "\t"
+              << "Descriptions" << std::endl;
+
+    // while (sqlite3_step(st) != SQLITE_DONE)
+    // {
+    //     std::cout << sqlite3_column_int(st, 0) << "\t" << sqlite3_column_text(st, 1) << "\t" << sqlite3_column_text(st, 2) << std::endl;
+    // }
+    sqlite3_step(st);
+    std::cout << sqlite3_column_int(st, 0) << "\t" << sqlite3_column_text(st, 1) << "\t" << sqlite3_column_text(st, 2) << "\t" << sqlite3_column_text(st, 3) << std::endl;
+    sqlite3_close(db);
+}
+
+void PasswordManager::openExistingDatabase()
+{
+    std::string userInput = "";
+    std::cout << "Choose database (exclude the extension): " << std::endl;
+    std::cin >> userInput;
+    struct stat sb;
+    if (stat((userInput + ".db").c_str(), &sb) != 0)
+    {
+        std::cout << "File does not exists..." << std::endl;
+        return;
+    }
+
+    PasswordManager::setDatabaseName(userInput);
+    std::cout << "Opened database: " << userInput + ".db" << std::endl;
 }

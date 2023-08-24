@@ -1,3 +1,7 @@
+//
+//                      Created by Sofie Stenberg 2023-08
+//
+
 #include <iostream>
 #include <string>
 #include ".\PasswordManager.h"
@@ -18,7 +22,8 @@ int main()
         std::cout << "2. Open existing database" << std::endl;
         std::cout << "3. Change master-password" << std::endl;
         std::cout << "4. Add new password to current database" << std::endl;
-        std::cout << "5. Display all passwords" << std::endl;
+        std::cout << "5. Display all entries (except for the password)" << std::endl;
+        std::cout << "6. Choose entry to display the corresponding password" << std::endl;
         std::cout << "9. Exit the password manager\n"
                   << std::endl;
         std::cin >> userInput;
@@ -36,10 +41,7 @@ int main()
         }
         case 2:
         {
-            std::cout << "Choose database: " << std::endl;
-            std::cin >> userInput;
-            pwdManager.setDatabaseName(userInput);
-            std::cout << "Opened database: " << userInput + ".db" << std::endl;
+            PasswordManager::openExistingDatabase();
             break;
         }
         case 3:
@@ -56,8 +58,13 @@ int main()
         case 5:
         {
             std::cout << "Content of database:" << std::endl;
-            PasswordManager::displayPwd();
+            PasswordManager::displayEntries();
             std::cout << "\nEnding of database." << std::endl;
+            break;
+        }
+        case 6:
+        {
+            PasswordManager::displayPwd();
             break;
         }
         case 9:

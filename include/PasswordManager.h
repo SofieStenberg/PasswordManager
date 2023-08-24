@@ -1,3 +1,7 @@
+//
+//                      Created by Sofie Stenberg 2023-08
+//
+
 #ifndef PASSWORDMANAGER_H
 #define PASSWORDMANAGER_H
 #include <string>
@@ -15,8 +19,10 @@ public:
     static void changeMasterPwd();
     static bool controlMasterPwd();
     static void addNewPassword();
+    static void displayEntries();
+    static int callbackCount(void *countOfRows, int argc, char **argv, char **colName);
     static void displayPwd();
-    static int callback(void *data, int argc, char **argv, char **colName);
+    static void openExistingDatabase();
 };
 
 #endif
