@@ -226,7 +226,17 @@ void PasswordManager::displayPwd()
     std::string userInput = "";
     std::cout << "Choose the entry/ID to the password you want to reveal:" << std::endl;
     std::cin >> userInput;
+    int nrUserInput = 0;
 
+    try
+    {
+        nrUserInput = stoi(userInput);
+    }
+    catch (...)
+    {
+        std::cout << "Invalid input..." << std::endl;
+        return;
+    }
     const char *filePwd = (PasswordManager::m_databaseName + ".db").c_str();
     sqlite3 *db;
     sqlite3_stmt *st;
@@ -241,9 +251,9 @@ void PasswordManager::displayPwd()
         std::cout << "Error in retrieving count: " << messageError << std::endl;
         return;
     }
-    if (stoi(userInput) > countOfRows)
+    if (nrUserInput < 1 || (nrUserInput > countOfRows))
     {
-        std::cout << "Entry is not valid..." << std::endl;
+        std::cout << "Entry does not exists..." << std::endl;
         return;
     }
 

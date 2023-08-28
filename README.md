@@ -1,8 +1,6 @@
 # PasswordManager
 
-A password manager
-
-compile: g++ ./PasswordManager
+A terminal based password manager.
 
 To compile with a makefile on windows: mingw32-make
 

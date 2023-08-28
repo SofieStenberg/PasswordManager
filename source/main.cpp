@@ -24,11 +24,25 @@ int main()
         std::cout << "4. Add new password to current database" << std::endl;
         std::cout << "5. Display all entries (except for the password)" << std::endl;
         std::cout << "6. Choose entry to display the corresponding password" << std::endl;
-        std::cout << "9. Exit the password manager\n"
+        std::cout << "7. Exit the password manager\n"
                   << std::endl;
         std::cin >> userInput;
+        int nr = 0;
 
-        int nr = stoi(userInput);
+        try
+        {
+            nr = stoi(userInput);
+        }
+        catch (...)
+        {
+            std::cout << "Invalid input..." << std::endl;
+            continue;
+        }
+        if (nr < 1 || nr > 7)
+        {
+            std::cout << "Invalid number..." << std::endl;
+            continue;
+        }
 
         // std::string pwdPlain;
         switch (nr)
@@ -67,7 +81,7 @@ int main()
             PasswordManager::displayPwd();
             break;
         }
-        case 9:
+        case 7:
         {
             continuing = false;
             std::cout << "Exiting..." << std::endl;
