@@ -23,6 +23,7 @@ public:
     static int callbackCount(void *countOfRows, int argc, char **argv, char **colName);
     static void displayPwd();
     static void openExistingDatabase();
+    static std::string generatePwd();
 };
 
 #endif

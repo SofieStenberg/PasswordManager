@@ -24,7 +24,8 @@ int main()
         std::cout << "4. Add new password to current database" << std::endl;
         std::cout << "5. Display all entries (except for the password)" << std::endl;
         std::cout << "6. Choose entry to display the corresponding password" << std::endl;
-        std::cout << "7. Exit the password manager\n"
+        std::cout << "7. Generate a password" << std::endl;
+        std::cout << "8. Exit the password manager\n"
                   << std::endl;
         std::cin >> userInput;
         int nr = 0;
@@ -82,6 +83,11 @@ int main()
             break;
         }
         case 7:
+        {
+            PasswordManager::generatePwd();
+            break;
+        }
+        case 8:
         {
             continuing = false;
             std::cout << "Exiting..." << std::endl;
