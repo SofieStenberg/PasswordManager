@@ -39,13 +39,12 @@ int main()
             std::cout << "Invalid input..." << std::endl;
             continue;
         }
-        if (nr < 1 || nr > 7)
+        if (nr < 1 || nr > 8)
         {
             std::cout << "Invalid number..." << std::endl;
             continue;
         }
 
-        // std::string pwdPlain;
         switch (nr)
         {
         case 1:
@@ -84,7 +83,8 @@ int main()
         }
         case 7:
         {
-            PasswordManager::generatePwd();
+            std::string generatedPwd = PasswordManager::generatePwd();
+            std::cout << "The generated password is: " << generatedPwd << std::endl;
             break;
         }
         case 8:

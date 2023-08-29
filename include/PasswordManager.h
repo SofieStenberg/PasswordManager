@@ -5,6 +5,7 @@
 #ifndef PASSWORDMANAGER_H
 #define PASSWORDMANAGER_H
 #include <string>
+#include <map>
 
 class PasswordManager
 {
@@ -24,6 +25,7 @@ public:
     static void displayPwd();
     static void openExistingDatabase();
     static std::string generatePwd();
+    static int replaceIndex(std::string pwd, char biggestChar, char specials[9]);
 };
 
 #endif
