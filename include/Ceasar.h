@@ -1,7 +1,11 @@
+//
+//                      Created by Sofie Stenberg 2023-08
+//
+
 #ifndef Ceasar_H
 #define Ceasar_H
 #include <string>
-const int CONTAINER_LENGTH = 71;
+// const int CONTAINER_LENGTH = 71;
 
 class Ceasar
 {

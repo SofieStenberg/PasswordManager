@@ -146,7 +146,7 @@ void PasswordManager::changeMasterPwd()
         return;
     }
 
-    std::string oldMasterPWD = std::to_string(PasswordManager::m_masterHash); // OLD PWD!!!!!!!!
+    std::string oldMasterPWD = std::to_string(PasswordManager::m_masterHash);
 
     // The user chooses a new master password
     std::string userInput = "";
@@ -218,13 +218,7 @@ void PasswordManager::changeMasterPwd()
     sqlite3_close(db);
 }
 
-// void PasswordManager::setMasterHash(size_t hash)
-// {
-//     PasswordManager::m_masterHash = hash;
-// }
-
 // This function controls if the user knows the master-password to the current database
-
 bool PasswordManager::controlMasterPwd()
 {
     // The user is prompted for the current master password, which is then hashed
@@ -232,15 +226,6 @@ bool PasswordManager::controlMasterPwd()
     std::cout << "What is the current master-password?" << std::endl;
     std::cin >> userInput;
     size_t oldPasswordHashUser = PasswordManager::pwdHashing(userInput);
-
-    // Retrieving the current master password from the .txt file
-    // std::string oldPasswordHashDatabase = "";
-    // std::ifstream masterFileInput(PasswordManager::m_databaseName + ".txt");
-    // std::getline(masterFileInput, oldPasswordHashDatabase);
-    // std::stringstream stream(oldPasswordHashDatabase);
-    // size_t oldPwdDatabase;
-    // stream >> oldPwdDatabase;
-    // masterFileInput.close();
 
     // Checks if the user provided password is correct
     if (oldPasswordHashUser != PasswordManager::m_masterHash)
@@ -277,8 +262,6 @@ void PasswordManager::addNewPassword()
                << "', '" << encryptedPwd
                << "', '" << newDesc
                << "');";
-
-    // std::cout << "The command: " << sqlCommand.str() << std::endl;
 
     // Executes the SQL statement
     int res = sqlite3_exec(db, sqlCommand.str().c_str(), NULL, 0, &messageError);
@@ -411,8 +394,8 @@ int PasswordManager::callbackCount(void *countOfRows, int argc, char **argv, cha
 // Working more with ASCII values
 std::string PasswordManager::generatePwd()
 {
-    // This to make sure that the rand() function really is random!!
-    // otherwise it spits out the same sequence every time yyou restart the program!!
+    // This to make sure that the rand() function really is random..
+    // Otherwise it spits out the same sequence every time you restart the program..
     srand(time(0));
     char ASCIIstart = '!';
     std::string generatedPwd = "";
@@ -534,7 +517,6 @@ std::string PasswordManager::generatePwd()
 // Finds the index of the first occurrency of the biggest char (the one we want to replace)
 int PasswordManager::replaceIndex(std::string generatedPwd, char biggestChar)
 {
-    // std::cout << "Inside replaceIndex2" << std::endl;
     int index = 0;
     int pwdLength = generatedPwd.length();
     if ((biggestChar == 'A') || (biggestChar == 'a'))
