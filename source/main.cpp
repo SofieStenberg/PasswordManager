@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include ".\PasswordManager.h"
+#include ".\Ceasar.h"
 
 int main()
 {

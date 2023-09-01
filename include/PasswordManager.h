@@ -11,21 +11,22 @@ class PasswordManager
 {
 private:
     static std::string m_databaseName;
+    static size_t m_masterHash;
 
 public:
     static void setDatabaseName(std::string databaseName);
     static void createDatabase();
-    static size_t pwdHashing(std::string pwd);
+    static void openExistingDatabase();
     static void createMasterFile(size_t hashedPwd);
+    static size_t pwdHashing(std::string pwd);
     static void changeMasterPwd();
     static bool controlMasterPwd();
     static void addNewPassword();
     static void displayEntries();
-    static int callbackCount(void *countOfRows, int argc, char **argv, char **colName);
     static void displayPwd();
-    static void openExistingDatabase();
+    static int callbackCount(void *countOfRows, int argc, char **argv, char **colName);
     static std::string generatePwd();
-    static int replaceIndex(std::string pwd, char biggestChar, char specials[9]);
+    static int replaceIndex(std::string pwd, char biggestChar);
 };
 
 #endif
