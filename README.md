@@ -13,7 +13,8 @@ master password which is set when the database is created. \
 The master password is hashed and saved in a text file when created. \
 The master password can be changed.
 
-To compile with a makefile on windows: mingw32-make
+To compile with a makefile on windows: `mingw32-make` \
+After compilation, run the program with; `.\bin\pwdManager.exe`
 
 The files regarding the sqlite3 database was downloaded from: https://www.sqlite.org/download.html \
 The exact zip that was downloaded was: `sqlite-amalgamation-3420000.zip`
