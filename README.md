@@ -2,7 +2,8 @@
 
 A terminal-based password manager. \
 When starting the program, the user is promted with the following display; \
-![](./screenshots/welcome.png)
+\
+![](./screenshots/welcome.PNG)
 
 The User are to enter a number corresponding to the action to perform. \
 
