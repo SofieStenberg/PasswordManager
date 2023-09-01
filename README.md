@@ -1,14 +1,18 @@
 # PasswordManager
 
-A terminal based password manager.
+A terminal-based password manager. \
+When starting the program, the user is promted with the following display; \
+![](./screenshots/welcome.png)
+
+The User are to enter a number corresponding to the action to perform. \
+
+All added passwords will de encrypted with a modified ceasar encryption. \
+To be able to wiew the entries in the database, the user have to enter a
+master password which is set when the database is created. \
+The master password is hashed and saved in a text file when created. \
+The master password can be changed. \
 
 To compile with a makefile on windows: mingw32-make
 
-The files regarding the sqlite was downloaded from: https://www.sqlite.org/download.html,
-And the file downloaded was: sqlite-amalgamation-3420000.zip
-
-To include sqlite3:
-
-1. Create objectfile; `gcc sqlite3.c -c`
-2. In the c++ file, be sure to `#include ".\sqlite3.h"`
-3. Compile with the object-file; `g++ main.cpp sqlite3.o -Isqlite3`
+The files regarding the sqlite3 database was downloaded from: https://www.sqlite.org/download.html \
+The exact zip that was downloaded was: sqlite-amalgamation-3420000.zip \
