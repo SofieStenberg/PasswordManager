@@ -18,7 +18,7 @@ std::string Ceasar::encrypt3(std::string plainText, std::string masterHash)
 
     for (int i = 0; i < plainLength; i++)
     {
-        int seed = (int)masterHash[i%masterLength] * ((int)Ceasar::m_fixedPwd[(i + 1) % masterLength]);
+        int seed = (int)masterHash[i%masterLength] * ((int)Ceasar::m_fixedPwd[(i + 1) % fixedLength]);
         srand(seed);
         int fixedIndex = rand() % fixedLength;
 
@@ -38,7 +38,7 @@ std::string Ceasar::decrypt3(std::string encPwd, std::string masterHash)
 
     for (int i = 0; i < encLength; i++)
     {
-        int seed = (int)masterHash[i%masterLength] * ((int)Ceasar::m_fixedPwd[(i + 1) % masterLength]);
+        int seed = (int)masterHash[i%masterLength] * ((int)Ceasar::m_fixedPwd[(i + 1) % fixedLength]);
         srand(seed);
         int fixedIndex = rand() % fixedLength;
 
